@@ -5,22 +5,27 @@ const url = process.argv[2];
 
 request(url, function (err, response, body) {
   if (err) {
-    console.log(err);
+    console.error('An error occurred:', err);
   } else if (response.statusCode === 200) {
-    const completed = {};
-    const tasks = JSON.parse(body);
-    for (const i in tasks) {
-      const task = tasks[i];
-      if (task.completed === true) {
-        if (completed[task.userId] === undefined) {
-          completed[task.userId] = 1;
-        } else {
-          completed[task.userId]++;
+    try {
+      const completed = {};
+      const tasks = JSON.parse(body);
+      for (const i in tasks) {
+        const task = tasks[i];
+        if (task.completed === true) {
+          if (completed[task.userId] === undefined) {
+            completed[task.userId] = 1;
+          } else {
+            completed[task.userId]++;
+          }
         }
       }
+      console.log(completed);
+    } catch (e) {
+      console.error('Error parsing JSON:', e);
     }
-    console.log(completed);
   } else {
-    console.log('An error occured. Status code: ' + response.statusCode);
+    console.error('An error occurred. Status code:', response.statusCode);
   }
 });
+
